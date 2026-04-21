@@ -20,22 +20,50 @@ div#app {
   justify-content: center;
 }
 
-div.board {
+div#ultimate-board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 4px;
-  width: 400px;
-  height: 400px;
-  background-color: #333;
+  gap: 15px;
+  padding: 15px;
+  background-color: #111;
+  border-radius: 12px;
 }
 
-div.cell {
-  background-color: #f0f0f0;
+.small-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  background-color: #444;
+  padding: 4px;
+  border-radius: 4px;
+  transition: transform 0.3s;
+}
+
+.small-board .active {
+  outline: 4px solid #00d4ff;
+  transform: scale(1.02);
+  z-index: 1;
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  background-color: #222;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: "Outfit", sans-serif;
+  font-weight: bold;
+  cursor: pointer;
   font-size: 1.6rem;
+}
+
+.cell:hover {
+  background-color: #333;
+}
+.cell.taken {
+  cursor: not-allowed;
 }
 
 .hidden {
@@ -57,7 +85,7 @@ div#gameEndModal {
   backdrop-filter: blur(5px);
   border: 2px solid black;
   border-radius: 5px;
-  padding: 10px 10px
+  padding: 10px 10px;
 }
 
 div#gameEndModal h1 {
