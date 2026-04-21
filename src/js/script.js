@@ -1,5 +1,7 @@
 const gameState = {
   currentPlayer: "X",
+  board: Array(9).fill(""),
+  gameActive: true,
 };
 
 const cells = Array.from(document.querySelectorAll(".cell"));
