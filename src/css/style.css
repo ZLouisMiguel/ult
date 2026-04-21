@@ -1,0 +1,13 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+div.board {
+  display: grid;
+  grid-template-columns: repeat(auto, 3);
+  grid-template-rows: repeat(auto, 3);
+}
