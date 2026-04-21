@@ -25,10 +25,9 @@ div.board {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   gap: 4px;
-  width: 300px;
-  height: 300px;
+  width: 400px;
+  height: 400px;
   background-color: #333;
-  padding: 4px;
 }
 
 div.cell {
