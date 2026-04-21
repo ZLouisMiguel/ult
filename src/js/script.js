@@ -50,15 +50,15 @@ function checkGameStatus() {
     }
   }
 
-  if(winner) {
+  if (winner) {
     gameState.gameActive = false;
     modalTitle.textContent = `Player ${winner} wins! :)`;
     modal.classList.remove("hidden");
     return;
   }
 
-  const isDraw = gameState.board.every(cell => cell !== "");
-  if(isDraw) {
+  const isDraw = gameState.board.every((cell) => cell !== "");
+  if (isDraw) {
     gameState.gameActive = false;
     modalTitle.textContent = `It's a draw! ¬_¬`;
     modal.classList.remove("hidden");
@@ -66,12 +66,25 @@ function checkGameStatus() {
   }
 }
 
-const cellClick = (cell) => {
-  if (cell.textContent == "X" || cell.textContent == "O") return;
-  cell.textContent = gameState.currentPlayer;
-  gameState.currentPlayer = gameState.currentPlayer == "X" ? "O" : "X";
+const cellClick = (clickedCell, index) => {
+  if (!gameState.gameActive) return;
+  if (gameState.board[index] !== "") return;
+
+  gameState.board[index] = gameState.currentPlayer;
+  clickedCell.textContent = gameState.currentPlayer;
+  checkGameStatus();
+
+  if (gameState.gameActive) {
+    gameState.currentPlayer = gameState.currentPlayer === "X" ? "O" : "X";
+  }
 };
 
-cells.forEach((cell) => {
-  cell.addEventListener("click", () => cellClick(cell));
+cells.forEach((cell, index) => {
+  cell.addEventListener("click", () => cellClick(cell, index));
 });
+
+restartButton.addEventListener("click", () => {
+  resetGame();
+});
+
+updateUI();
