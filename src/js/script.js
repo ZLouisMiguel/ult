@@ -28,19 +28,50 @@ function updateUI() {
 }
 
 function resetGame() {
-    gameState.board.fill("");
-    gameState.currentPlayer = "X";
-    gameState.gameActive = true;
-    updateUI();
-    modal.classList.add("hidden");
+  gameState.board.fill("");
+  gameState.currentPlayer = "X";
+  gameState.gameActive = true;
+  updateUI();
+  modal.classList.add("hidden");
 }
 
-cells.forEach((cell) => {
-  cell.addEventListener("click", () => cellClick(cell));
-});
+function checkGameStatus() {
+  let winner = null;
+
+  for (let comb of winningCombinations) {
+    const [a, b, c] = comb;
+    const valA = gameState.board[a];
+    const valB = gameState.board[b];
+    const valC = gameState.board[c];
+
+    if (valA && valA == valB && valA == valC) {
+      winner = valA;
+      break;
+    }
+  }
+
+  if(winner) {
+    gameState.gameActive = false;
+    modalTitle.textContent = `Player ${winner} wins! :)`;
+    modal.classList.remove("hidden");
+    return;
+  }
+
+  const isDraw = gameState.board.every(cell => cell !== "");
+  if(isDraw) {
+    gameState.gameActive = false;
+    modalTitle.textContent = `It's a draw! ¬_¬`;
+    modal.classList.remove("hidden");
+    return;
+  }
+}
 
 const cellClick = (cell) => {
   if (cell.textContent == "X" || cell.textContent == "O") return;
   cell.textContent = gameState.currentPlayer;
   gameState.currentPlayer = gameState.currentPlayer == "X" ? "O" : "X";
 };
+
+cells.forEach((cell) => {
+  cell.addEventListener("click", () => cellClick(cell));
+});
