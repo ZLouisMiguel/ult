@@ -1,6 +1,8 @@
 const gameState = {
   currentPlayer: "X",
-  board: Array(9).fill(""),
+  boards: Array.from({ length: 9 }, () => Array(9).fill("")),
+  mainBoard: Array(9).fill(""),
+  activeBoardIndex: -1,
   gameActive: true,
 };
 
@@ -15,7 +17,7 @@ const winningCombinations = [
   [2, 4, 6],
 ];
 
-const cells = Array.from(document.querySelectorAll(".cell"));
+const boardContainer = document.getElementById("ultimate-board");
 const modal = document.getElementById("gameEndModal");
 const modalTitle = document.querySelector("#gameEndModal h1");
 const restartButton = document.querySelector("#gameEndModal button");
@@ -27,64 +29,17 @@ function updateUI() {
   });
 }
 
-function resetGame() {
-  gameState.board.fill("");
-  gameState.currentPlayer = "X";
-  gameState.gameActive = true;
-  updateUI();
-  modal.classList.add("hidden");
-}
-
-function checkGameStatus() {
-  let winner = null;
-
+function getWinner(boardArray) {
   for (let comb of winningCombinations) {
-    const [a, b, c] = comb;
-    const valA = gameState.board[a];
-    const valB = gameState.board[b];
-    const valC = gameState.board[c];
-
-    if (valA && valA == valB && valA == valC) {
-      winner = valA;
-      break;
+    let [a, b, c] = comb;
+    if (
+      boardArray[a] &&
+      boardArray[a] == boardArray[b] &&
+      boardArray[a] == boardArray[c]
+    ) {
+      return boardArray[a];
     }
   }
 
-  if (winner) {
-    gameState.gameActive = false;
-    modalTitle.textContent = `Player ${winner} wins! :)`;
-    modal.classList.remove("hidden");
-    return;
-  }
-
-  const isDraw = gameState.board.every((cell) => cell !== "");
-  if (isDraw) {
-    gameState.gameActive = false;
-    modalTitle.textContent = `It's a draw! ¬_¬`;
-    modal.classList.remove("hidden");
-    return;
-  }
+  return boardArray.every((cell) => cell !== "") ? "Draw" : "null";
 }
-
-const cellClick = (clickedCell, index) => {
-  if (!gameState.gameActive) return;
-  if (gameState.board[index] !== "") return;
-
-  gameState.board[index] = gameState.currentPlayer;
-  clickedCell.textContent = gameState.currentPlayer;
-  checkGameStatus();
-
-  if (gameState.gameActive) {
-    gameState.currentPlayer = gameState.currentPlayer === "X" ? "O" : "X";
-  }
-};
-
-cells.forEach((cell, index) => {
-  cell.addEventListener("click", () => cellClick(cell, index));
-});
-
-restartButton.addEventListener("click", () => {
-  resetGame();
-});
-
-updateUI();
