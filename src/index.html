@@ -7,8 +7,67 @@
     <title>Ultimate tic-tac-toe</title>
   </head>
   <body>
+    <div id="landing" class="hidden">
+      <h1>
+        Welcome to Ultimate Tic-Tac-Toe <span class="won-x">X</span>
+        <span class="won-o">O</span>
+      </h1>
+
+      <p>
+        Ultimate Tic-Tac-Toe isn't like regular tic-tac-toe, the idea of the
+        game came from the book Math Games with Bad Drawings by Ben Orlin
+      </p>
+
+      <div class="rules-container">
+        <div class="rule">
+          <p class="description">
+            Take turns marking individual squares. The first move of the game
+            can occur anywhere; after that, you must play on the mini-board
+            dictated by your opponent’s previous move.
+            <em
+              >How so? Whichever square they picked, you must play on the
+              corresponding mini-board.</em
+            >
+          </p>
+          <div class="img-container">
+            <img src="../assets/rule1.png" alt="rule image" />
+          </div>
+        </div>
+        <div class="rule">
+          <p class="description">
+            If you place <em>three in a row on a mini-board,</em> then you win
+            that miniboard. The board is now closed; any player sent there may
+            move anywhere they like, on any other board.
+          </p>
+          <div class="img-container">
+            <img src="../assets/rule2.png" alt="rule image" />
+          </div>
+        </div>
+        <div class="rule">
+          <p class="description">
+            <em>Three mini-boards in a row wins the game.</em>
+          </p>
+          <div class="img-container">
+            <img src="../assets/rule3.png" alt="rule image" />
+          </div>
+        </div>
+      </div>
+
+      <div class="next-controls">
+        <h4>Play against:</h4>
+        <button>Human</button>
+        <button>Computer</button>
+      </div>
+    </div>
+
     <div id="app">
       <div id="ultimate-board"></div>
+      <div class="game-controls">
+        <button id="btn-back">Menu</button>
+        <div id="turn-indicator">
+          Turn: <span id="current-player" class="won-x">X</span>
+        </div>
+      </div>
     </div>
 
     <div id="gameEndModal" class="hidden">
