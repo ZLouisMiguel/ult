@@ -4,6 +4,7 @@ const gameState = {
   mainBoard: Array(9).fill(""),
   activeBoardIndex: -1,
   gameActive: true,
+  isVsComputer: false,
 };
 
 const winningCombinations = [
@@ -122,6 +123,44 @@ function resetGame() {
   initBoard();
   updateActiveBoardUI();
   modal.classList.add("hidden");
+}
+
+function getBestMove() {
+  const legalBoards =
+    gameState.activeBoardIndex === -1
+      ? gameState.mainBoard
+          .map((status, idx) => (status === "" ? idx : null))
+          .filter((v) => v != null)
+      : [gameState.activeBoardIndex];
+
+  for (let bIdx of legalBoards) {
+    for (let cIdx = 0; cIdx < 9; cIdx++) {
+      if (gameState.boards[bIdx][cIdx] === "") {
+        const tempBoard = [...gameState.boards[bIdx]];
+        tempBoard[cIdx] = "O";
+        if (getWinner(tempBoard) === "O") return { bIdx, cIdx };
+      }
+    }
+  }
+
+  for (let bIdx of legalBoards) {
+    for (let cIdx = 0; cIdx < 9; cIdx++) {
+      if (gameState.boards[bIdx][cIdx] === "") {
+        const tempBoard = [...gameState.boards[bIdx]];
+        tempBoard[cIdx] = "X";
+        if (getWinner(tempBoard) === "X") return { bIdx, cIdx };
+      }
+    }
+  }
+
+  const allMoves = [];
+  legalBoards.forEach((bIdx) => {
+    gameState.boards[bIdx].forEach((cell, cIdx) => {
+      if (cell === "") allMoves.push({ bIdx, cIdx });
+    });
+  });
+
+  return allMoves[Math.floor(Math.random() * allMoves.length)];
 }
 
 restartButton.addEventListener("click", resetGame);
