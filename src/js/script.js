@@ -26,6 +26,7 @@ const menuButtons = document.querySelectorAll(".next-controls button");
 const backBtn = document.getElementById("btn-back");
 const landingPage = document.getElementById("landing");
 const appPage = document.getElementById("app");
+const currentPlayerDisplay = document.getElementById("current-player");
 
 function getWinner(boardArray) {
   for (let comb of winningCombinations) {
@@ -102,6 +103,15 @@ function handleClick(boardIdx, cellIdx, cellEl, boardEl) {
   }
 
   gameState.currentPlayer = gameState.currentPlayer === "X" ? "O" : "X";
+  currentPlayerDisplay.textContent = gameState.currentPlayer;
+  if (gameState.currentPlayer === "X") {
+    currentPlayerDisplay.classList.remove("won-o");
+    currentPlayerDisplay.classList.add("won-x");
+  } else {
+    currentPlayerDisplay.classList.remove("won-x");
+    currentPlayerDisplay.classList.add("won-o");
+  }
+
   updateActiveBoardUI();
 
   if (
@@ -135,6 +145,9 @@ function updateActiveBoardUI() {
 
 function resetGame() {
   gameState.currentPlayer = "X";
+  currentPlayerDisplay.textContent = "X";
+  currentPlayerDisplay.add("won-x");
+  currentPlayerDisplay.remove("won-o");
   gameState.mainBoard.fill("");
   gameState.boards = Array.from({ length: 9 }, () => Array(9).fill(""));
   gameState.activeBoardIndex = -1;
