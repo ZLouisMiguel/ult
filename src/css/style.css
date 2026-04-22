@@ -25,7 +25,7 @@ div#ultimate-board {
   grid-template-columns: repeat(3, 1fr);
   gap: 15px;
   padding: 15px;
-  background-color: #111;
+  background-color: #8d8585;
   border-radius: 12px;
 }
 
@@ -33,13 +33,12 @@ div#ultimate-board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 4px;
-  background-color: #444;
-  padding: 4px;
+  background-color: #070707;
   border-radius: 4px;
   transition: transform 0.3s;
 }
 
-.small-board .active {
+.small-board .active-board {
   outline: 4px solid #00d4ff;
   transform: scale(1.02);
   z-index: 1;
@@ -48,8 +47,8 @@ div#ultimate-board {
 .cell {
   width: 40px;
   height: 40px;
-  background-color: #222;
-  color: white;
+  background-color: #f8eded;
+  color: #070707;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -60,7 +59,7 @@ div#ultimate-board {
 }
 
 .cell:hover {
-  background-color: #333;
+  background-color: #f0e5e5;
 }
 .cell.taken {
   cursor: not-allowed;
