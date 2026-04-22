@@ -43,3 +43,20 @@ function getWinner(boardArray) {
 
   return boardArray.every((cell) => cell !== "") ? "Draw" : "null";
 }
+
+function initBoard() {
+    boardContainer.innerHTML ="";
+    for(let b = 0 ; b<9 ; b++) {
+        const smallBoardDiv = document.createElement("div");
+        smallBoardDiv.classList.add("small-board");
+        smallBoardDiv.dataset.boardId = b;
+
+        for(let c = 0 ; c < 9 ; c++) {
+            const cellDiv = document.createElement("div");
+            cellDiv.classList.add("cell");
+            cellDiv.addEventListener("click", ()=> {handleClick(b,c,cellDiv,smallBoardDiv)});
+            smallBoardDiv.appendChild(cellDiv);
+        }
+        boardContainer.appendChild(smallBoardDiv);
+    }
+}
