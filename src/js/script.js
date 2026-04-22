@@ -22,7 +22,10 @@ const boardContainer = document.getElementById("ultimate-board");
 const modal = document.getElementById("gameEndModal");
 const modalTitle = document.querySelector("#gameEndModal h1");
 const restartButton = document.querySelector("#gameEndModal button");
-const appDiv = document.getElementById("app");
+const menuButtons = document.querySelectorAll(".next-controls button");
+const backBtn = document.getElementById("btn-back");
+const landingPage = document.getElementById("landing");
+const appPage = document.getElementById("app");
 
 function getWinner(boardArray) {
   for (let comb of winningCombinations) {
@@ -100,6 +103,22 @@ function handleClick(boardIdx, cellIdx, cellEl, boardEl) {
 
   gameState.currentPlayer = gameState.currentPlayer === "X" ? "O" : "X";
   updateActiveBoardUI();
+
+  if (
+    gameState.gameActive &&
+    gameState.isVsComputer &&
+    gameState.currentPlayer === "O"
+  ) {
+    boardContainer.style.pointerEvents = "none";
+
+    setTimeout(() => {
+      const move = getBestMove();
+      const boardEl = document.querySelector(`[data-board-id="${move.bIdx}"]`);
+      const cellEl = boardEl.children[move.cIdx];
+      boardContainer.style.pointerEvents = "auto";
+      handleClick(move.bIdx, move.cIdx, cellEl, boardEl);
+    }, 1800);
+  }
 }
 
 function updateActiveBoardUI() {
@@ -163,6 +182,21 @@ function getBestMove() {
   return allMoves[Math.floor(Math.random() * allMoves.length)];
 }
 
+menuButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    gameState.isVsComputer = btn.textContent.toLowerCase().includes("computer");
+    landingPage.classList.add("hidden");
+    appPage.classList.remove("hidden");
+    resetGame();
+  });
+});
+
+backBtn.addEventListener("click", () => {
+  landingPage.classList.remove("hidden");
+  appPage.classList.add("hidden");
+});
+
 restartButton.addEventListener("click", resetGame);
+
 initBoard();
 updateActiveBoardUI();
