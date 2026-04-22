@@ -58,7 +58,7 @@ function initBoard() {
 }
 
 function handleClick(boardIdx, cellIdx, cellEl, boardEl) {
-  if (!gameState.active) return;
+  if (!gameState.gameActive) return;
   if (gameState.boards[boardIdx][cellIdx] !== "") return;
   if (
     gameState.activeBoardIndex !== -1 &&
@@ -75,7 +75,7 @@ function handleClick(boardIdx, cellIdx, cellEl, boardEl) {
       gameState.mainBoard[boardIdx] = localResult;
       boardEl.classList.add(localResult == "X" ? "won-x" : "won-o");
     } else if (localResult === "Draw") {
-      gameState.mainBoard[boardIdx] === "D";
+      gameState.mainBoard[boardIdx] = "D";
     }
   }
 
@@ -107,7 +107,7 @@ function updateActiveBoardUI() {
       gameState.activeBoardIndex === idx ||
       gameState.activeBoardIndex === -1
     ) {
-      if (gameState.mainBoard[idx] === "") board.classList.add("active");
+      if (gameState.mainBoard[idx] === "") board.classList.add("active-board");
     }
   });
 }
