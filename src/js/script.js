@@ -76,6 +76,7 @@ function handleClick(boardIdx, cellIdx, cellEl, boardEl) {
       boardEl.classList.add(localResult == "X" ? "won-x" : "won-o");
     } else if (localResult === "Draw") {
       gameState.mainBoard[boardIdx] = "D";
+      boardEl.classList.add("won-draw");
     }
   }
 
