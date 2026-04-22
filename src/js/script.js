@@ -23,12 +23,6 @@ const modalTitle = document.querySelector("#gameEndModal h1");
 const restartButton = document.querySelector("#gameEndModal button");
 const appDiv = document.getElementById("app");
 
-function updateUI() {
-  cells.forEach((cell, index) => {
-    cell.textContent = gameState.board[index];
-  });
-}
-
 function getWinner(boardArray) {
   for (let comb of winningCombinations) {
     let [a, b, c] = comb;
@@ -41,22 +35,82 @@ function getWinner(boardArray) {
     }
   }
 
-  return boardArray.every((cell) => cell !== "") ? "Draw" : "null";
+  return boardArray.every((cell) => cell !== "") ? "Draw" : null;
 }
 
 function initBoard() {
-    boardContainer.innerHTML ="";
-    for(let b = 0 ; b<9 ; b++) {
-        const smallBoardDiv = document.createElement("div");
-        smallBoardDiv.classList.add("small-board");
-        smallBoardDiv.dataset.boardId = b;
+  boardContainer.innerHTML = "";
+  for (let b = 0; b < 9; b++) {
+    const smallBoardDiv = document.createElement("div");
+    smallBoardDiv.classList.add("small-board");
+    smallBoardDiv.dataset.boardId = b;
 
-        for(let c = 0 ; c < 9 ; c++) {
-            const cellDiv = document.createElement("div");
-            cellDiv.classList.add("cell");
-            cellDiv.addEventListener("click", ()=> {handleClick(b,c,cellDiv,smallBoardDiv)});
-            smallBoardDiv.appendChild(cellDiv);
-        }
-        boardContainer.appendChild(smallBoardDiv);
+    for (let c = 0; c < 9; c++) {
+      const cellDiv = document.createElement("div");
+      cellDiv.classList.add("cell");
+      cellDiv.addEventListener("click", () => {
+        handleClick(b, c, cellDiv, smallBoardDiv);
+      });
+      smallBoardDiv.appendChild(cellDiv);
     }
+    boardContainer.appendChild(smallBoardDiv);
+  }
 }
+
+function handleClick(boardIdx, cellIdx, cellEl, boardEl) {
+  if (!gameState.active) return;
+  if (gameState.boards[boardIdx][cellIdx] !== "") return;
+  if (
+    gameState.activeBoardIndex !== -1 &&
+    gameState.activeBoardIndex !== boardIdx
+  )
+    return;
+
+  gameState.boards[boardIdx][cellIdx] = gameState.currentPlayer;
+  cellEl.textContent = gameState.currentPlayer;
+
+  if (gameState.mainBoard[boardIdx] === "") {
+    const localResult = getWinner(gameState.boards[boardIdx]);
+    if (localResult && localResult !== "Draw") {
+      gameState.mainBoard[boardIdx] = localResult;
+      boardEl.classList.add(localResult == "X" ? "won-x" : "won-o");
+    } else if (localResult === "Draw") {
+      gameState.mainBoard[boardIdx] === "D";
+    }
+  }
+
+  if (gameState.mainBoard[cellIdx] != "") {
+    gameState.activeBoardIndex = -1;
+  } else {
+    gameState.activeBoardIndex = cellIdx;
+  }
+
+  const globalResult = getWinner(gameState.mainBoard);
+  if (globalResult) {
+    gameState.gameActive = false;
+    modalTitle.textContent =
+      globalResult === "Draw"
+        ? "It's a draw =/"
+        : `Player ${globalResult} wins the match`;
+    modal.classList.remove("hidden");
+    return;
+  }
+
+  gameState.currentPlayer = gameState.currentPlayer === "X" ? "O" : "X";
+  updateActiveBoardUI();
+}
+
+function updateActiveBoardUI() {
+  document.querySelectorAll(".small-board").forEach((board, idx) => {
+    board.classList.remove("active-board");
+    if (
+      gameState.activeBoardIndex === idx ||
+      gameState.activeBoardIndex === -1
+    ) {
+      if (gameState.mainBoard[idx] === "") board.classList.add("active");
+    }
+  });
+}
+
+initBoard();
+updateActiveBoardUI();
