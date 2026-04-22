@@ -66,6 +66,12 @@ div#ultimate-board {
   cursor: not-allowed;
 }
 
+.won-x {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+.won-o {
+  background-color: rgba(0, 0, 255, 0.2);
+}
 .hidden {
   display: none !important;
 }
