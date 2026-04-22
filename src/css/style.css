@@ -38,7 +38,7 @@ div#ultimate-board {
   transition: transform 0.3s;
 }
 
-.small-board .active-board {
+.small-board.active-board {
   outline: 4px solid #00d4ff;
   transform: scale(1.02);
   z-index: 1;
