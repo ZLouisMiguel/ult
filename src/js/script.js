@@ -112,5 +112,17 @@ function updateActiveBoardUI() {
   });
 }
 
+function resetGame() {
+  gameState.currentPlayer = "X";
+  gameState.mainBoard.fill("");
+  gameState.boards = Array.from({ length: 9 }, () => Array(9).fill(""));
+  gameState.activeBoardIndex = -1;
+  gameState.gameActive = true;
+  initBoard();
+  updateActiveBoardUI();
+  modal.classList.add("hidden");
+}
+
+restartButton.addEventListener("click", resetGame);
 initBoard();
 updateActiveBoardUI();
