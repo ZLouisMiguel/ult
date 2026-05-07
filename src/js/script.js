@@ -28,7 +28,23 @@ const landingPage = document.getElementById("landing");
 const appPage = document.getElementById("app");
 const currentPlayerDisplay = document.getElementById("current-player");
 const restartInGame = document.getElementById("btn-restart");
+const toast = document.getElementById("toast");
+let toastTimer = null;
 let computerMoveTimer = null;
+
+function showToast(message) {
+  if (toastTimer) clearInterval(toastTimer);
+  toast.textContent = message;
+  toast.classList.remove("hidden", "fade-out");
+
+  toastTimer = setTimeout(() => {
+    toast.classList.add("fade-out");
+    toastTimer = setTimeout(() => {
+      toast.classList.add("hidden");
+      toast.classList.remove("fade-out");
+    }, 400);
+  }, 1800);
+}
 
 function cancelComputerMove() {
   if (computerMoveTimer != null) {
@@ -74,13 +90,21 @@ function initBoard() {
 
 function handleClick(boardIdx, cellIdx, cellEl, boardEl) {
   if (!gameState.gameActive) return;
-  if (gameState.mainBoard[boardIdx] !== "") return;
-  if (gameState.boards[boardIdx][cellIdx] !== "") return;
+  if (gameState.mainBoard[boardIdx] !== "") {
+    showToast("That board is already finished");
+    return;
+  }
+  if (gameState.boards[boardIdx][cellIdx] !== "") {
+    showToast("That cell is already taken");
+    return;
+  }
   if (
     gameState.activeBoardIndex !== -1 &&
     gameState.activeBoardIndex !== boardIdx
-  )
+  ) {
+    showToast("You must play on the highlighted board");
     return;
+  }
 
   gameState.boards[boardIdx][cellIdx] = gameState.currentPlayer;
   cellEl.textContent = gameState.currentPlayer;
@@ -156,6 +180,10 @@ function updateActiveBoardUI() {
 
 function resetGame() {
   cancelComputerMove();
+  if (toastTimer) {
+    clearTimeout(toastTimer);
+    toastTimer = null;
+  }
   gameState.currentPlayer = "X";
   currentPlayerDisplay.textContent = "X";
   currentPlayerDisplay.classList.add("won-x");
