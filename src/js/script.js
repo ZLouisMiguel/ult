@@ -27,6 +27,15 @@ const backBtn = document.getElementById("btn-back");
 const landingPage = document.getElementById("landing");
 const appPage = document.getElementById("app");
 const currentPlayerDisplay = document.getElementById("current-player");
+let computerMoveTimer = null;
+
+function cancelComputerMove() {
+  if (computerMoveTimer != null) {
+    clearTimeout(computerMoveTimer);
+    computerMoveTimer = null;
+    boardContainer.style.pointerEvents = "auto";
+  }
+}
 
 function getWinner(boardArray) {
   for (let comb of winningCombinations) {
@@ -122,7 +131,7 @@ function handleClick(boardIdx, cellIdx, cellEl, boardEl) {
   ) {
     boardContainer.style.pointerEvents = "none";
 
-    setTimeout(() => {
+    computerMoveTimer = setTimeout(() => {
       const move = getBestMove();
       const boardEl = document.querySelector(`[data-board-id="${move.bIdx}"]`);
       const cellEl = boardEl.children[move.cIdx];
@@ -145,6 +154,7 @@ function updateActiveBoardUI() {
 }
 
 function resetGame() {
+  cancelComputerMove();
   gameState.currentPlayer = "X";
   currentPlayerDisplay.textContent = "X";
   currentPlayerDisplay.classList.add("won-x");
@@ -206,6 +216,7 @@ menuButtons.forEach((btn) => {
 });
 
 backBtn.addEventListener("click", () => {
+  cancelComputerMove();
   landingPage.classList.remove("hidden");
   appPage.classList.add("hidden");
 });
