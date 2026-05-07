@@ -262,6 +262,24 @@ body {
   margin-left: 5px;
 }
 
+#btn-restart {
+  font-family: inherit;
+  font-weight: 800;
+  background-color: var(--gray-light);
+  color: var(--text-main);
+  padding: 8px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+#btn-restart:hover {
+  transform: scale(1.02);
+  background-color: var(--x-red-alt);
+  color: white;
+}
+
 .hidden {
   display: none !important;
 }
