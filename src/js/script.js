@@ -18,10 +18,23 @@ const winningCombinations = [
   [2, 4, 6],
 ];
 
+const lineLabels = {
+  "012": "the top row",
+  345: "the middle row",
+  678: "the bottom row",
+  "036": "the left column",
+  147: "the center column",
+  258: "the right column",
+  "048": "the main diagonal",
+  246: "the anti-diagonal",
+};
+
 const boardContainer = document.getElementById("ultimate-board");
 const modal = document.getElementById("gameEndModal");
-const modalTitle = document.querySelector("#gameEndModal h1");
-const restartButton = document.querySelector("#gameEndModal button");
+const modalTitle = document.getElementById("modal-title");
+const modalSubtitle = document.getElementById("modal-subtitle");
+const modalRestartBtn = document.getElementById("modal-restart-btn");
+const modalMenuBtn = document.getElementById("modal-menu-btn");
 const menuButtons = document.querySelectorAll(".next-controls button");
 const backBtn = document.getElementById("btn-back");
 const landingPage = document.getElementById("landing");
@@ -69,6 +82,26 @@ function getWinner(boardArray) {
   }
 
   return boardArray.every((cell) => cell !== "") ? "Draw" : null;
+}
+
+function getWinningLine(boardArray) {
+  for (let [a, b, c] of winningCombinations) {
+    if (
+      boardArray[a] &&
+      boardArray[a] == boardArray[b] &&
+      boardArray[a] == boardArray[c]
+    ) {
+      return [a, b, c];
+    }
+  }
+
+  return null;
+}
+
+function describeWin(line) {
+  if (!line) return "";
+  const key = line.join("");
+  return lineLabels[key] ?? "three in a row";
 }
 
 function initBoard() {
@@ -131,10 +164,17 @@ function handleClick(boardIdx, cellIdx, cellEl, boardEl) {
   const globalResult = getWinner(gameState.mainBoard);
   if (globalResult) {
     gameState.gameActive = false;
-    modalTitle.textContent =
-      globalResult === "Draw"
-        ? "It's a draw =/"
-        : `Player ${globalResult} wins the match`;
+
+    if (globalResult === "Draw") {
+      modalTitle.textContent = "It's a draw!";
+      modalSubtitle.textContent = "Every board has been filled no winner.";
+    } else {
+      const line = getWinningLine(gameState.mainBoard);
+      modalTitle.textContent = `Player ${globalResult} wins!`;
+      modalTitle.className = globalResult === "X" ? "won-x" : "won-o";
+      modalSubtitle.textContent = `They claimed ${describeWin(line)} on the big board.`;
+    }
+
     modal.classList.remove("hidden");
     return;
   }
@@ -254,7 +294,14 @@ backBtn.addEventListener("click", () => {
   appPage.classList.add("hidden");
 });
 
-restartButton.addEventListener("click", resetGame);
+modalRestartBtn.addEventListener("click", resetGame);
+modalMenuBtn.addEventListener("click", () => {
+  cancelComputerMove();
+  modal.classList.add("hidden");
+  landingPage.classList.remove("hidden");
+  appPage.classList.add("hidden");
+});
+
 restartInGame.addEventListener("click", resetGame);
 
 initBoard();
