@@ -64,6 +64,7 @@ function initBoard() {
 
 function handleClick(boardIdx, cellIdx, cellEl, boardEl) {
   if (!gameState.gameActive) return;
+  if (gameState.mainBoard[boardIdx] !== "") return;
   if (gameState.boards[boardIdx][cellIdx] !== "") return;
   if (
     gameState.activeBoardIndex !== -1 &&
