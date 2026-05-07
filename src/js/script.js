@@ -27,6 +27,7 @@ const backBtn = document.getElementById("btn-back");
 const landingPage = document.getElementById("landing");
 const appPage = document.getElementById("app");
 const currentPlayerDisplay = document.getElementById("current-player");
+const restartInGame = document.getElementById("btn-restart");
 let computerMoveTimer = null;
 
 function cancelComputerMove() {
@@ -222,6 +223,7 @@ backBtn.addEventListener("click", () => {
 });
 
 restartButton.addEventListener("click", resetGame);
+restartInGame.addEventListener("click", resetGame);
 
 initBoard();
 updateActiveBoardUI();
