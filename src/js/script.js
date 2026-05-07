@@ -29,6 +29,7 @@ const appPage = document.getElementById("app");
 const currentPlayerDisplay = document.getElementById("current-player");
 const restartInGame = document.getElementById("btn-restart");
 const toast = document.getElementById("toast");
+const turnIndicator = document.getElementById("turn-indicator");
 let toastTimer = null;
 let computerMoveTimer = null;
 
@@ -51,6 +52,7 @@ function cancelComputerMove() {
     clearTimeout(computerMoveTimer);
     computerMoveTimer = null;
     boardContainer.style.pointerEvents = "auto";
+    turnIndicator.classList.remove("thinking");
   }
 }
 
@@ -157,12 +159,14 @@ function handleClick(boardIdx, cellIdx, cellEl, boardEl) {
     boardContainer.style.pointerEvents = "none";
 
     computerMoveTimer = setTimeout(() => {
+      computerMoveTimer = null;
+      turnIndicator.classList.remove("thinking");
       const move = getBestMove();
       const boardEl = document.querySelector(`[data-board-id="${move.bIdx}"]`);
       const cellEl = boardEl.children[move.cIdx];
       boardContainer.style.pointerEvents = "auto";
       handleClick(move.bIdx, move.cIdx, cellEl, boardEl);
-    }, 1800);
+    }, 600);
   }
 }
 
