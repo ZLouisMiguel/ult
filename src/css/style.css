@@ -259,6 +259,26 @@ body {
   letter-spacing: 1px;
 }
 
+#turn-indicator.thinking::after {
+  content: "...";
+  animation: blink 0.6s step-start infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+#turn-indicator.thinking {
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
 #current-player {
   margin-left: 5px;
 }
