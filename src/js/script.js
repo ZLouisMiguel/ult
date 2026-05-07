@@ -147,8 +147,8 @@ function updateActiveBoardUI() {
 function resetGame() {
   gameState.currentPlayer = "X";
   currentPlayerDisplay.textContent = "X";
-  currentPlayerDisplay.add("won-x");
-  currentPlayerDisplay.remove("won-o");
+  currentPlayerDisplay.classList.add("won-x");
+  currentPlayerDisplay.classList.remove("won-o");
   gameState.mainBoard.fill("");
   gameState.boards = Array.from({ length: 9 }, () => Array(9).fill(""));
   gameState.activeBoardIndex = -1;
