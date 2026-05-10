@@ -42,9 +42,9 @@ export function getWinningLine(boardArray) {
     ) {
       return [a, b, c];
     }
-
-    return null;
   }
+
+  return null;
 }
 
 export function validateMove(state, boardIdx, cellIdx) {
@@ -75,7 +75,7 @@ export function applyMove(state, boardIdx, cellIdx) {
     next.mainBoard[boardIdx] = "D";
   }
 
-  next.activeBoardIndex = next.mainBoard[cellIdx] === "" ? -1 : cellIdx;
+  next.activeBoardIndex = next.mainBoard[cellIdx] === "" ? cellIdx : -1;
 
   const globalResult = getWinner(next.mainBoard);
   if (globalResult && globalResult != "Draw") {
