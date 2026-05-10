@@ -1,308 +1,83 @@
-const gameState = {
-  currentPlayer: "X",
-  boards: Array.from({ length: 9 }, () => Array(9).fill("")),
-  mainBoard: Array(9).fill(""),
-  activeBoardIndex: -1,
-  gameActive: true,
-  isVsComputer: false,
-};
+import { createInitialState, validateMove, applyMove } from "./engine.js";
+import { getComputerMove } from "./computer.js";
+import {
+  initBoard,
+  renderState,
+  showInvalidMove,
+  setThinking,
+  showEndModal,
+  showGame,
+  showLanding,
+  resetUI,
+  bindEvents,
+} from "./ui.js";
 
-const winningCombinations = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6],
-];
+let state = createInitialState();
+let isVsComputer = false;
+let computerTimer = null;
 
-const lineLabels = {
-  "012": "the top row",
-  345: "the middle row",
-  678: "the bottom row",
-  "036": "the left column",
-  147: "the center column",
-  258: "the right column",
-  "048": "the main diagonal",
-  246: "the anti-diagonal",
-};
+function handleMove(boardIdx, cellIdx) {
+  const { valid, reason } = validateMove(state, boardIdx, cellIdx);
+  if (!valid) {
+    showInvalidMove(reason);
+    return;
+  }
 
-const boardContainer = document.getElementById("ultimate-board");
-const modal = document.getElementById("gameEndModal");
-const modalTitle = document.getElementById("modal-title");
-const modalSubtitle = document.getElementById("modal-subtitle");
-const modalRestartBtn = document.getElementById("modal-restart-btn");
-const modalMenuBtn = document.getElementById("modal-menu-btn");
-const menuButtons = document.querySelectorAll(".next-controls button");
-const backBtn = document.getElementById("btn-back");
-const landingPage = document.getElementById("landing");
-const appPage = document.getElementById("app");
-const currentPlayerDisplay = document.getElementById("current-player");
-const restartInGame = document.getElementById("btn-restart");
-const toast = document.getElementById("toast");
-const turnIndicator = document.getElementById("turn-indicator");
-let toastTimer = null;
-let computerMoveTimer = null;
+  state = applyMove(state, boardIdx, cellIdx);
+  renderState(state);
 
-function showToast(message) {
-  if (toastTimer) clearInterval(toastTimer);
-  toast.textContent = message;
-  toast.classList.remove("hidden", "fade-out");
+  if (!state.gameActive) {
+    showEndModal(state);
+    return;
+  }
 
-  toastTimer = setTimeout(() => {
-    toast.classList.add("fade-out");
-    toastTimer = setTimeout(() => {
-      toast.classList.add("hidden");
-      toast.classList.remove("fade-out");
-    }, 400);
-  }, 1800);
+  if (isVsComputer && state.currentPlayer === "O") {
+    scheduleComputerMove();
+  }
+}
+
+function scheduleComputerMove() {
+  setThinking(true);
+  computerTimer = setTimeout(() => {
+    computerTimer = null;
+    setThinking(false);
+    const move = getComputerMove(state);
+    handleMove(move.bIdx, move.cIdx);
+  }, 600);
 }
 
 function cancelComputerMove() {
-  if (computerMoveTimer != null) {
-    clearTimeout(computerMoveTimer);
-    computerMoveTimer = null;
-    boardContainer.style.pointerEvents = "auto";
-    turnIndicator.classList.remove("thinking");
+  if (computerTimer != null) {
+    clearTimeout(computerTimer);
+    computerTimer = null;
+    setThinking(false);
   }
 }
 
-function getWinner(boardArray) {
-  for (let comb of winningCombinations) {
-    let [a, b, c] = comb;
-    if (
-      boardArray[a] &&
-      boardArray[a] == boardArray[b] &&
-      boardArray[a] == boardArray[c]
-    ) {
-      return boardArray[a];
-    }
-  }
 
-  return boardArray.every((cell) => cell !== "") ? "Draw" : null;
+function startGame(vsComputer) {
+  isVsComputer = vsComputer;
+  resetGame();
+  showGame();
 }
 
-function getWinningLine(boardArray) {
-  for (let [a, b, c] of winningCombinations) {
-    if (
-      boardArray[a] &&
-      boardArray[a] == boardArray[b] &&
-      boardArray[a] == boardArray[c]
-    ) {
-      return [a, b, c];
-    }
-  }
-
-  return null;
-}
-
-function describeWin(line) {
-  if (!line) return "";
-  const key = line.join("");
-  return lineLabels[key] ?? "three in a row";
-}
-
-function initBoard() {
-  boardContainer.innerHTML = "";
-  for (let b = 0; b < 9; b++) {
-    const smallBoardDiv = document.createElement("div");
-    smallBoardDiv.classList.add("small-board");
-    smallBoardDiv.dataset.boardId = b;
-
-    for (let c = 0; c < 9; c++) {
-      const cellDiv = document.createElement("div");
-      cellDiv.classList.add("cell");
-      cellDiv.addEventListener("click", () => {
-        handleClick(b, c, cellDiv, smallBoardDiv);
-      });
-      smallBoardDiv.appendChild(cellDiv);
-    }
-    boardContainer.appendChild(smallBoardDiv);
-  }
-}
-
-function handleClick(boardIdx, cellIdx, cellEl, boardEl) {
-  if (!gameState.gameActive) return;
-  if (gameState.mainBoard[boardIdx] !== "") {
-    showToast("That board is already finished");
-    return;
-  }
-  if (gameState.boards[boardIdx][cellIdx] !== "") {
-    showToast("That cell is already taken");
-    return;
-  }
-  if (
-    gameState.activeBoardIndex !== -1 &&
-    gameState.activeBoardIndex !== boardIdx
-  ) {
-    showToast("You must play on the highlighted board");
-    return;
-  }
-
-  gameState.boards[boardIdx][cellIdx] = gameState.currentPlayer;
-  cellEl.textContent = gameState.currentPlayer;
-
-  if (gameState.mainBoard[boardIdx] === "") {
-    const localResult = getWinner(gameState.boards[boardIdx]);
-    if (localResult && localResult !== "Draw") {
-      gameState.mainBoard[boardIdx] = localResult;
-      boardEl.classList.add(localResult == "X" ? "won-x" : "won-o");
-    } else if (localResult === "Draw") {
-      gameState.mainBoard[boardIdx] = "D";
-      boardEl.classList.add("won-draw");
-    }
-  }
-
-  if (gameState.mainBoard[cellIdx] != "") {
-    gameState.activeBoardIndex = -1;
-  } else {
-    gameState.activeBoardIndex = cellIdx;
-  }
-
-  const globalResult = getWinner(gameState.mainBoard);
-  if (globalResult) {
-    gameState.gameActive = false;
-
-    if (globalResult === "Draw") {
-      modalTitle.textContent = "It's a draw!";
-      modalSubtitle.textContent = "Every board has been filled no winner.";
-    } else {
-      const line = getWinningLine(gameState.mainBoard);
-      modalTitle.textContent = `Player ${globalResult} wins!`;
-      modalTitle.className = globalResult === "X" ? "won-x" : "won-o";
-      modalSubtitle.textContent = `They claimed ${describeWin(line)} on the big board.`;
-    }
-
-    modal.classList.remove("hidden");
-    return;
-  }
-
-  gameState.currentPlayer = gameState.currentPlayer === "X" ? "O" : "X";
-  currentPlayerDisplay.textContent = gameState.currentPlayer;
-  if (gameState.currentPlayer === "X") {
-    currentPlayerDisplay.classList.remove("won-o");
-    currentPlayerDisplay.classList.add("won-x");
-  } else {
-    currentPlayerDisplay.classList.remove("won-x");
-    currentPlayerDisplay.classList.add("won-o");
-  }
-
-  updateActiveBoardUI();
-
-  if (
-    gameState.gameActive &&
-    gameState.isVsComputer &&
-    gameState.currentPlayer === "O"
-  ) {
-    boardContainer.style.pointerEvents = "none";
-
-    computerMoveTimer = setTimeout(() => {
-      computerMoveTimer = null;
-      turnIndicator.classList.remove("thinking");
-      const move = getBestMove();
-      const boardEl = document.querySelector(`[data-board-id="${move.bIdx}"]`);
-      const cellEl = boardEl.children[move.cIdx];
-      boardContainer.style.pointerEvents = "auto";
-      handleClick(move.bIdx, move.cIdx, cellEl, boardEl);
-    }, 600);
-  }
-}
-
-function updateActiveBoardUI() {
-  document.querySelectorAll(".small-board").forEach((board, idx) => {
-    board.classList.remove("active-board");
-    if (
-      gameState.activeBoardIndex === idx ||
-      gameState.activeBoardIndex === -1
-    ) {
-      if (gameState.mainBoard[idx] === "") board.classList.add("active-board");
-    }
-  });
-}
 
 function resetGame() {
   cancelComputerMove();
-  if (toastTimer) {
-    clearTimeout(toastTimer);
-    toastTimer = null;
-  }
-  gameState.currentPlayer = "X";
-  currentPlayerDisplay.textContent = "X";
-  currentPlayerDisplay.classList.add("won-x");
-  currentPlayerDisplay.classList.remove("won-o");
-  gameState.mainBoard.fill("");
-  gameState.boards = Array.from({ length: 9 }, () => Array(9).fill(""));
-  gameState.activeBoardIndex = -1;
-  gameState.gameActive = true;
-  initBoard();
-  updateActiveBoardUI();
-  modal.classList.add("hidden");
+  resetUI();
+  state = createInitialState();
+  initBoard(handleMove);
+  renderState(state);
 }
 
-function getBestMove() {
-  const legalBoards =
-    gameState.activeBoardIndex === -1
-      ? gameState.mainBoard
-          .map((status, idx) => (status === "" ? idx : null))
-          .filter((v) => v != null)
-      : [gameState.activeBoardIndex];
-
-  for (let bIdx of legalBoards) {
-    for (let cIdx = 0; cIdx < 9; cIdx++) {
-      if (gameState.boards[bIdx][cIdx] === "") {
-        const tempBoard = [...gameState.boards[bIdx]];
-        tempBoard[cIdx] = "O";
-        if (getWinner(tempBoard) === "O") return { bIdx, cIdx };
-      }
-    }
-  }
-
-  for (let bIdx of legalBoards) {
-    for (let cIdx = 0; cIdx < 9; cIdx++) {
-      if (gameState.boards[bIdx][cIdx] === "") {
-        const tempBoard = [...gameState.boards[bIdx]];
-        tempBoard[cIdx] = "X";
-        if (getWinner(tempBoard) === "X") return { bIdx, cIdx };
-      }
-    }
-  }
-
-  const allMoves = [];
-  legalBoards.forEach((bIdx) => {
-    gameState.boards[bIdx].forEach((cell, cIdx) => {
-      if (cell === "") allMoves.push({ bIdx, cIdx });
-    });
-  });
-
-  return allMoves[Math.floor(Math.random() * allMoves.length)];
+function goToMenu() {
+  cancelComputerMove();
+  resetUI();
+  showLanding();
 }
 
-menuButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    gameState.isVsComputer = btn.textContent.toLowerCase().includes("computer");
-    landingPage.classList.add("hidden");
-    appPage.classList.remove("hidden");
-    resetGame();
-  });
-});
-
-backBtn.addEventListener("click", () => {
-  cancelComputerMove();
-  landingPage.classList.remove("hidden");
-  appPage.classList.add("hidden");
-});
-
-modalRestartBtn.addEventListener("click", resetGame);
-modalMenuBtn.addEventListener("click", () => {
-  cancelComputerMove();
-  modal.classList.add("hidden");
-  landingPage.classList.remove("hidden");
-  appPage.classList.add("hidden");
-});
-
-restartInGame.addEventListener("click", resetGame);
-
-initBoard();
-updateActiveBoardUI();
+bindEvents({
+  onMenuSelect: startGame,
+  onRestart: resetGame,
+  onBack: goToMenu
+})
