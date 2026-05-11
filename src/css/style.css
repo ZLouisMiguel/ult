@@ -410,3 +410,92 @@ body {
 #toast.fade-out {
   opacity: 0;
 }
+
+#lobby {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 50;
+}
+
+.lobby-box {
+  background: white;
+  padding: 40px;
+  border-radius: 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 300px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.lobby-box h2 {
+  font-size: 1.8rem;
+  font-weight: 900;
+}
+
+.connection-status {
+  font-weight: 700;
+  color: var(--o-purple);
+  min-height: 1.4em;
+}
+
+#lobby-join-form {
+  display: flex;
+  gap: 8px;
+}
+
+#room-code-input {
+  font-family: inherit;
+  font-size: 1.4rem;
+  font-weight: 800;
+  width: 120px;
+  padding: 10px;
+  border: 3px solid var(--text-main);
+  border-radius: 12px;
+  text-align: center;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+#room-code-input:focus {
+  outline: none;
+  border-color: var(--o-purple);
+}
+
+#btn-join-code {
+  font-family: inherit;
+  font-weight: 800;
+  background: var(--o-purple);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  cursor: pointer;
+  flex: 1;
+  transition: all 0.2s;
+}
+
+#btn-join-code:hover {
+  background: var(--o-purple-alt);
+}
+
+#btn-back-lobby {
+  font-family: inherit;
+  font-weight: 700;
+  background: var(--gray-light);
+  border: none;
+  border-radius: 12px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#btn-back-lobby:hover {
+  background: var(--x-red-alt);
+  color: white;
+}
