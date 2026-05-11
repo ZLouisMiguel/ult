@@ -55,8 +55,30 @@
 
       <div class="next-controls">
         <h4>Play against:</h4>
-        <button>Human</button>
-        <button>Computer</button>
+        <button data-mode="local">Human</button>
+        <button data-mode="computer">Computer</button>
+        <button data-mode="online-match">Quick Match</button>
+        <button data-mode="online-create">Create Room</button>
+        <button data-mode="online-join">Join Room</button>
+      </div>
+    </div>
+
+    <div id="lobby" class="hidden">
+      <div class="lobby-box">
+        <h2>Online Multiplayer</h2>
+        <p id="connection-status" class="connection-status">Connecting...</p>
+
+        <div id="lobby-join-form">
+          <input
+            id="room-code-input"
+            type="text"
+            maxlength="4"
+            placeholder="Enter room code"
+          />
+          <button id="btn-join-code">Join</button>
+        </div>
+
+        <button id="btn-back-lobby">← Back</button>
       </div>
     </div>
 
