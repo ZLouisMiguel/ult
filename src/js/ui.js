@@ -1,12 +1,12 @@
 const LINE_LABELS = {
   "012": "the top row",
-  "345": "the middle row",
-  "678": "the bottom row",
+  345: "the middle row",
+  678: "the bottom row",
   "036": "the left column",
-  "147": "the center column",
-  "258": "the right column",
+  147: "the center column",
+  258: "the right column",
   "048": "the main diagonal",
-  "246": "the anti-diagonal",
+  246: "the anti-diagonal",
 };
 
 function describeWin(line) {
@@ -28,6 +28,11 @@ const backBtn = document.getElementById("btn-back");
 const restartBtn = document.getElementById("btn-restart");
 const menuButtons = document.querySelectorAll(".next-controls button");
 const toastEl = document.getElementById("toast");
+const lobbyEl = document.getElementById("lobby");
+const connectionStatusEl = document.getElementById("connection-status");
+const btnJoinCode = document.getElementById("btn-join-code");
+const roomCodeInput = document.getElementById("room-code-input");
+const btnBackLobby = document.getElementById("btn-back-lobby");
 
 let toastTimer = null;
 
@@ -157,4 +162,56 @@ export function bindEvents({ onMenuSelect, onRestart, onBack }) {
 
   backBtn.addEventListener("click", onBack);
   modalMenuBtn.addEventListener("click", onBack);
+}
+
+export function showLobby() {
+  lobbyEl.classList.remove("hidden");
+}
+
+export function hideLobby() {
+  lobbyEl.classList.add("hidden");
+}
+
+export function showConnectionStatus(msg) {
+  connectionStatusEl.textContent = msg;
+  showLobby();
+}
+
+export function setPlayerSymbol(symbol) {
+  const banner = document.createElement("div");
+  banner.id = "symbol-banner";
+  banner.innerHTML = `You are playing as <span class="${
+    symbol === "X" ? "won-x" : "won-o"
+  }">${symbol}</span>`;
+  banner.style.cssText =
+    "text-align:center;font-weight:800;font-size:1.1rem;margin-bottom:4px;";
+
+  const existing = document.getElementById("symbol-banner");
+  if (existing) existing.remove();
+  appPage.insertBefore(banner, appPage.firstChild);
+}
+
+export function bindOnlineEvents({ onModeSelect, onJoinCode, onBackLobby }) {
+  document.querySelectorAll(".next-controls button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const m = btn.dataset.mode;
+      if (m === "online-join") {
+        showLobby();
+        showConnectionStatus("Enter the room code from your friend");
+      } else {
+        onModeSelect(m);
+      }
+    });
+  });
+
+  btnJoinCode.addEventListener("click", () => {
+    const code = roomCodeInput.value.trim();
+    if (code.length === 4) onJoinCode(code);
+  });
+
+  roomCodeInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") btnJoinCode.click();
+  });
+
+  btnBackLobby.addEventListener("click", onBackLobby);
 }
